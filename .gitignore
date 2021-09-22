@@ -14,3 +14,4 @@ demo
 #其它
 crash.*
 .vscode
+libavcodec.a
