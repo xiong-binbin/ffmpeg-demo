@@ -11,7 +11,7 @@
 #include <assert.h>
 #include <unistd.h>
 #include <string.h>
-#include "logger.h"
+
 
 #define     SUCCESS             (0)
 #define     FAILED              (-1)

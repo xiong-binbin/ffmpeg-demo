@@ -21,13 +21,13 @@ endif()
 
 #引入头文件
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/include
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/include
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/libx264/include
 )
 
 #引入源文件
-file(GLOB SRC_LIST "src/*.cpp")
+file(GLOB SRC_LIST "app/src/*.cpp")
 
 #生成可执行文件
 add_executable(${PROJECT} ${SRC_LIST}) 
@@ -54,6 +54,7 @@ target_link_libraries(
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libswscale.a
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/libx264/lib/libx264.a
     z
+    pthread
     -Wl,--end-group
 )
 
