@@ -1,0 +1,14 @@
+prefix=../../ffmpeg
+exec_prefix=${prefix}
+libdir=../../ffmpeg/lib
+includedir=../../ffmpeg/include
+
+Name: libavutil
+Description: FFmpeg utility library
+Version: 56.70.100
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavutil 
+Libs.private: -pthread -lva-drm -lva -lm -lva
+Cflags: -I${includedir}

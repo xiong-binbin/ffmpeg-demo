@@ -1,0 +1,16 @@
+#编译相关文件
+Makefile
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+
+#日志相关文件
+logs
+zlog.conf
+
+#生成程序
+demo
+
+#其它
+crash.*
+.vscode
