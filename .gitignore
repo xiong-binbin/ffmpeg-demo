@@ -15,3 +15,6 @@ demo
 crash.*
 .vscode
 libavcodec.a
+*.mp4
+*.aac
+*.pcm

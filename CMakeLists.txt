@@ -44,17 +44,15 @@ add_executable(${PROJECT} ${SRC_LIST})
 target_link_libraries(
     ${PROJECT}
     -Wl,--start-group
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavcodec.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavdevice.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavfilter.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavformat.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavutil.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libpostproc.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libswresample.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libswscale.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/libx264/lib/libx264.a
-    z
-    pthread
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavcodec.so.58.134.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavdevice.so.58.13.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavfilter.so.7.110.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavformat.so.58.76.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavutil.so.56.70.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libpostproc.so.55.9.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libswresample.so.3.9.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libswscale.so.5.9.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/libx264/lib/libx264.so.163
     -Wl,--end-group
 )
 
