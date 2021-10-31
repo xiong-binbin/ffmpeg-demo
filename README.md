@@ -1,5 +1,7 @@
 # ffmpeg-demo
 
+export LD_LIBRARY_PATH=/home/user/ffmpeg-demo/third_party/lib
+
 
 ## x264
 

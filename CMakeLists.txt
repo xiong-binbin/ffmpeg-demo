@@ -22,8 +22,7 @@ endif()
 #引入头文件
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/app/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/libx264/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/include
 )
 
 #引入源文件
@@ -44,15 +43,15 @@ add_executable(${PROJECT} ${SRC_LIST})
 target_link_libraries(
     ${PROJECT}
     -Wl,--start-group
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavcodec.so.58.134.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavdevice.so.58.13.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavfilter.so.7.110.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavformat.so.58.76.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libavutil.so.56.70.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libpostproc.so.55.9.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libswresample.so.3.9.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg/lib/libswscale.so.5.9.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/libx264/lib/libx264.so.163
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavcodec.so.58.134.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavdevice.so.58.13.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavfilter.so.7.110.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavformat.so.58.76.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavutil.so.56.70.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libpostproc.so.55.9.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libswresample.so.3.9.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libswscale.so.5.9.100
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libx264.so.163
     -Wl,--end-group
 )
 

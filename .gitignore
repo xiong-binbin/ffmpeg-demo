@@ -1,4 +1,5 @@
 #编译相关文件
+build
 Makefile
 CMakeFiles
 CMakeCache.txt

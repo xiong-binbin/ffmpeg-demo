@@ -5,8 +5,8 @@
 
 int main(int argc, char *argv[])
 {
-    // AudioDecode* ad = new AudioDecode();
-    VideoDecode* vd = new VideoDecode();
+    AudioDecode* ad = new AudioDecode();
+    // VideoDecode* vd = new VideoDecode();
 
     while (true)
     {
