@@ -25,37 +25,37 @@ AudioDecode::AudioDecode()
     codec = avcodec_find_decoder(AV_CODEC_ID_AAC);
     if (!codec) 
     {
-        exit(1);
+        assert(0);
     }
 
     parser = av_parser_init(codec->id);
     if (!parser) 
     {
-        exit(1);
+        assert(0);
     }
 
     ctx = avcodec_alloc_context3(codec);
     if (!ctx) 
     {
-        exit(1);
+        assert(0);
     }
 
     if (avcodec_open2(ctx, codec, NULL) < 0) 
     {
-        exit(1);
+        assert(0);
     }
 
     in_file = fopen("audio.aac", "rb");
     if (!in_file) 
     {
-        exit(1);
+        assert(0);
     }
 
     out_file = fopen("out.pcm", "wb");
     if (!out_file) 
     {
         av_free(ctx);
-        exit(1);
+        assert(0);
     }
 
     data      = inbuf;
@@ -68,13 +68,13 @@ AudioDecode::AudioDecode()
             frame = av_frame_alloc();
             if (!frame)
             {
-                exit(1);
+                assert(0);
             }
         }
         ret = av_parser_parse2(parser, ctx, &pkt->data, &pkt->size, data, data_size, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
         if (ret < 0)
         {
-            exit(1);
+            assert(0);
         }
 
         data      += ret;
@@ -132,7 +132,7 @@ void AudioDecode::decode(AVCodecContext *ctx, AVPacket *pkt, AVFrame *frame, FIL
     ret = avcodec_send_packet(ctx, pkt);
     if(ret < 0)
     {
-        exit(1);
+        assert(0);
     }
 
     while (ret >= 0)
@@ -144,13 +144,13 @@ void AudioDecode::decode(AVCodecContext *ctx, AVPacket *pkt, AVFrame *frame, FIL
         }
         else if(ret < 0)
         {
-            exit(1);
+            assert(0);
         }
 
         len = av_get_bytes_per_sample(ctx->sample_fmt);
         if(len < 0)
         {
-            exit(1);
+            assert(0);
         }
         
         for(i=0; i<frame->nb_samples; i++)
