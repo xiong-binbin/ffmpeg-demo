@@ -90,6 +90,8 @@ VideoDecode::VideoDecode()
     avcodec_free_context(&ctx);
     av_frame_free(&frame);
     av_packet_free(&pkt);
+
+    std::cout << "Finish!" << std::endl;
 }
 
 VideoDecode::~VideoDecode()

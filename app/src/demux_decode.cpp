@@ -3,7 +3,7 @@
 DemuxDecode::DemuxDecode()
 {
     int ret = 0;
-    std::string srcFile = "1.mp4";
+    std::string srcFile = "2.mp4";
 
     if (avformat_open_input(&m_fmtCtx, srcFile.c_str(), NULL, NULL) < 0) 
     {
@@ -90,6 +90,8 @@ DemuxDecode::DemuxDecode()
     {
         decode_packet(m_audioDecCtx, NULL);
     }
+
+    std::cout << "Finish!" << std::endl;
 }
 
 DemuxDecode::~DemuxDecode()
