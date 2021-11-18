@@ -16,28 +16,16 @@ VideoDecode::VideoDecode()
     uint8_t  inbuf[INBUF_SIZE + AV_INPUT_BUFFER_PADDING_SIZE] = {0};
 
     pkt = av_packet_alloc();
-    if (!pkt)
-    {
-        assert(0);
-    }
+    assert(NULL != pkt);
 
     codec = avcodec_find_decoder(AV_CODEC_ID_H264);
-    if (!codec) 
-    {
-        assert(0);
-    }
+    assert(NULL != codec);
 
     parser = av_parser_init(codec->id);
-    if (!parser) 
-    {
-        assert(0);
-    }
+    assert(NULL != parser);
 
     ctx = avcodec_alloc_context3(codec);
-    if (!ctx) 
-    {
-        assert(0);
-    }
+    assert(NULL != ctx);
 
     if (avcodec_open2(ctx, codec, NULL) < 0) 
     {
@@ -45,16 +33,10 @@ VideoDecode::VideoDecode()
     }
 
     in_file = fopen("video.h264", "rb");
-    if (!in_file) 
-    {
-        assert(0);
-    }
+    assert(NULL != in_file);
 
     frame = av_frame_alloc();
-    if (!frame) 
-    {
-        assert(0);
-    }
+    assert(NULL != frame);
 
     while (!feof(in_file))
     {
@@ -68,10 +50,7 @@ VideoDecode::VideoDecode()
         while (data_size > 0) 
         {
             ret = av_parser_parse2(parser, ctx, &pkt->data, &pkt->size, data, data_size, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
-            if(ret < 0)
-            {
-                assert(0);
-            }
+            assert(0 == ret);
 
             data      += ret;
             data_size -= ret;
@@ -106,10 +85,7 @@ void VideoDecode::decode(AVCodecContext *ctx, AVFrame *frame, AVPacket *pkt, con
     FILE *fp = NULL;
 
     ret = avcodec_send_packet(ctx, pkt);
-    if (ret < 0) 
-    {
-        assert(0);
-    }
+    assert(0 == ret);
 
     while (ret >= 0)
     {

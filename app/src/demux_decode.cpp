@@ -5,34 +5,25 @@ DemuxDecode::DemuxDecode()
     int ret = 0;
     std::string srcFile = "2.mp4";
 
-    if (avformat_open_input(&m_fmtCtx, srcFile.c_str(), NULL, NULL) < 0) 
-    {
-        assert(0);
-    }
+    ret = avformat_open_input(&m_fmtCtx, srcFile.c_str(), NULL, NULL);
+    assert(0 == ret);
 
-    if (avformat_find_stream_info(m_fmtCtx, NULL) < 0) 
-    {
-        assert(0);
-    }
+    ret = avformat_find_stream_info(m_fmtCtx, NULL);
+    assert(0 == ret);
 
     if (open_codec_context(&m_videoStreamIdx, &m_videoDecCtx, m_fmtCtx, AVMEDIA_TYPE_VIDEO) >= 0) 
     {
         m_videoStream = m_fmtCtx->streams[m_videoStreamIdx];
         m_videoDstFile = fopen("video.yuv", "wb");
-        if(!m_videoDstFile)
-        {
-            assert(0);
-        }
+        assert(NULL != m_videoDstFile);
 
         m_videoWidth  = m_videoDecCtx->width;
         m_videoHeight = m_videoDecCtx->height;
         m_pixFmt      = m_videoDecCtx->pix_fmt;
 
         ret = av_image_alloc(m_videoDstData, m_videoDstLinesize, m_videoDecCtx->width, m_videoDecCtx->height, m_videoDecCtx->pix_fmt, 1);
-        if(ret < 0)
-        {
-            assert(0);
-        }
+        assert(0 == ret);
+
         m_videoDstBufsize = ret;
     }
 
@@ -40,10 +31,7 @@ DemuxDecode::DemuxDecode()
     {
         m_audioStream = m_fmtCtx->streams[m_audioStreamIdx];
         m_audioDstFile = fopen("audio.pcm", "wb");
-        if(!m_audioDstFile)
-        {
-            assert(0);
-        }
+        assert(NULL != m_audioDstFile);
     }
 
     av_dump_format(m_fmtCtx, 0, srcFile.c_str(), 0);
@@ -53,16 +41,10 @@ DemuxDecode::DemuxDecode()
     }
 
     m_frame = av_frame_alloc();
-    if (!m_frame) 
-    {
-        assert(0);
-    }
+    assert(NULL != m_frame);
 
     m_pkt = av_packet_alloc();
-    if (!m_pkt) 
-    {
-        assert(0);
-    }
+    assert(NULL != m_pkt);
 
     while (av_read_frame(m_fmtCtx, m_pkt) >= 0)
     {

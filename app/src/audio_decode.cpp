@@ -23,22 +23,13 @@ AudioDecode::AudioDecode()
     pkt = av_packet_alloc();
 
     codec = avcodec_find_decoder(AV_CODEC_ID_AAC);
-    if (!codec) 
-    {
-        assert(0);
-    }
+    assert(NULL != codec);
 
     parser = av_parser_init(codec->id);
-    if (!parser) 
-    {
-        assert(0);
-    }
+    assert(NULL != parser);
 
     ctx = avcodec_alloc_context3(codec);
-    if (!ctx) 
-    {
-        assert(0);
-    }
+    assert(NULL != ctx);
 
     if (avcodec_open2(ctx, codec, NULL) < 0) 
     {
@@ -46,17 +37,10 @@ AudioDecode::AudioDecode()
     }
 
     in_file = fopen("audio.aac", "rb");
-    if (!in_file) 
-    {
-        assert(0);
-    }
+    assert(NULL != in_file);
 
     out_file = fopen("out.pcm", "wb");
-    if (!out_file) 
-    {
-        av_free(ctx);
-        assert(0);
-    }
+    assert(NULL != out_file);
 
     data      = inbuf;
     data_size = fread(inbuf, 1, AUDIO_INBUF_SIZE, in_file);
@@ -66,16 +50,10 @@ AudioDecode::AudioDecode()
         if (!frame) 
         {
             frame = av_frame_alloc();
-            if (!frame)
-            {
-                assert(0);
-            }
+            assert(NULL != frame);
         }
         ret = av_parser_parse2(parser, ctx, &pkt->data, &pkt->size, data, data_size, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
-        if (ret < 0)
-        {
-            assert(0);
-        }
+        assert(0 == ret);
 
         data      += ret;
         data_size -= ret;
@@ -130,10 +108,7 @@ void AudioDecode::decode(AVCodecContext *ctx, AVPacket *pkt, AVFrame *frame, FIL
     int ch = 0;
 
     ret = avcodec_send_packet(ctx, pkt);
-    if(ret < 0)
-    {
-        assert(0);
-    }
+    assert(0 == ret);
 
     while (ret >= 0)
     {
@@ -148,10 +123,7 @@ void AudioDecode::decode(AVCodecContext *ctx, AVPacket *pkt, AVFrame *frame, FIL
         }
 
         len = av_get_bytes_per_sample(ctx->sample_fmt);
-        if(len < 0)
-        {
-            assert(0);
-        }
+        assert(0 <= len);
         
         for(i=0; i<frame->nb_samples; i++)
         {
