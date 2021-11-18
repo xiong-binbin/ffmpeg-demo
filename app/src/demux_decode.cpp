@@ -18,7 +18,7 @@ DemuxDecode::DemuxDecode()
     if (open_codec_context(&m_videoStreamIdx, &m_videoDecCtx, m_fmtCtx, AVMEDIA_TYPE_VIDEO) >= 0) 
     {
         m_videoStream = m_fmtCtx->streams[m_videoStreamIdx];
-        m_videoDstFile = fopen("video_dst", "wb");
+        m_videoDstFile = fopen("video.yuv", "wb");
         if(!m_videoDstFile)
         {
             assert(0);
@@ -39,7 +39,7 @@ DemuxDecode::DemuxDecode()
     if (open_codec_context(&m_audioStreamIdx, &m_audioDecCtx, m_fmtCtx, AVMEDIA_TYPE_AUDIO) >= 0)
     {
         m_audioStream = m_fmtCtx->streams[m_audioStreamIdx];
-        m_audioDstFile = fopen("audio_dst", "wb");
+        m_audioDstFile = fopen("audio.pcm", "wb");
         if(!m_audioDstFile)
         {
             assert(0);
@@ -89,6 +89,28 @@ DemuxDecode::DemuxDecode()
     if(m_audioDecCtx)
     {
         decode_packet(m_audioDecCtx, NULL);
+    }
+
+    if(m_videoStream)
+    {
+        printf("ffplay -f rawvideo -pix_fmt %s -video_size %dx%d video.yuv \n", av_get_pix_fmt_name(m_videoDecCtx->pix_fmt), m_videoDecCtx->width, m_videoDecCtx->height);
+    }
+
+    if(m_audioStream)
+    {
+        enum AVSampleFormat sfmt = m_audioDecCtx->sample_fmt;
+        int channels = m_audioDecCtx->channels;
+
+        //planar：每个声道数据单独存放;packed：多个声道数据交错存放
+        if(av_sample_fmt_is_planar(sfmt))
+        {
+            // const char *packed = av_get_sample_fmt_name(sfmt);
+            printf("Warning: the sample format the decoder produced is planar! \n");
+            sfmt = av_get_packed_sample_fmt(sfmt);
+            channels = 1;
+        }
+
+        printf("audio channels: %d, AVSampleFormat: %d \n", channels, sfmt);
     }
 
     std::cout << "Finish!" << std::endl;
