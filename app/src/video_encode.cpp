@@ -36,7 +36,7 @@ VideoEncode::VideoEncode()
     ret = avcodec_open2(ctx, codec, NULL);
     assert(0 == ret);
 
-    fp = fopen("dst", "wb");
+    fp = fopen("dst.h264", "wb");
     assert(NULL != fp);
 
     frame = av_frame_alloc();
@@ -87,6 +87,8 @@ VideoEncode::VideoEncode()
     avcodec_free_context(&ctx);
     av_frame_free(&frame);
     av_packet_free(&pkt);
+
+    std::cout << "Finish!" << std::endl;
 }
 
 VideoEncode::~VideoEncode()
