@@ -43,15 +43,15 @@ add_executable(${PROJECT} ${SRC_LIST})
 target_link_libraries(
     ${PROJECT}
     -Wl,--start-group
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavcodec.so.58.134.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavdevice.so.58.13.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavfilter.so.7.110.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavformat.so.58.76.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavutil.so.56.70.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libpostproc.so.55.9.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libswresample.so.3.9.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libswscale.so.5.9.100
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libx264.so.163
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavcodec.so
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavdevice.so
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavfilter.so
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavformat.so
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libavutil.so
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libpostproc.so
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libswresample.so
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libswscale.so
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libx264.so
     -Wl,--end-group
 )
 
