@@ -13,5 +13,11 @@ class VideoFilter
 public:
     VideoFilter();
     ~VideoFilter();
+
+protected:
+    void display_frame(const AVFrame* frame, AVRational time_base);
+
+private:
+    int64_t m_lastPts{ 0 };
 };
 

@@ -11,6 +11,8 @@ VideoFilter::VideoFilter()
     AVFormatContext* fmtCtx = NULL;
     int videoStreamIndex = 0;
 
+    m_lastPts = AV_NOPTS_VALUE;
+
     frame = av_frame_alloc();
     assert(NULL == frame);
 
@@ -83,8 +85,100 @@ VideoFilter::VideoFilter()
 
     avfilter_inout_free(&filterIn);
     avfilter_inout_free(&filterOut);
+
+    while (true)
+    {
+        if(av_read_frame(fmtCtx, pkt) < 0)
+        {
+            break;
+        }
+
+        if(pkt->stream_index == videoStreamIndex)
+        {
+            ret = avcodec_send_packet(ctx, pkt);
+            assert(0 == ret);
+
+            while (ret >= 0)
+            {
+                ret = avcodec_receive_frame(ctx, frame);
+                if(ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+                {
+                    break;
+                }
+                else if(ret < 0)
+                {
+                    assert(0);
+                }
+
+                frame->pts = frame->best_effort_timestamp;
+                if(av_buffersrc_add_frame_flags(bufferSrcCtx, frame, AV_BUFFERSRC_FLAG_KEEP_REF) < 0)
+                {
+                    break;
+                }
+
+                while (true)
+                {
+                    ret = av_buffersink_get_frame(bufferSinkCtx, filt_frame);
+                    if(ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+                    {
+                        break;
+                    }
+                    else if(ret < 0)
+                    {
+                        assert(0);
+                    }
+                    display_frame(filt_frame, bufferSinkCtx->inputs[0]->time_base);
+                    av_frame_unref(filt_frame);
+                }
+                av_frame_unref(frame);
+            }   
+        }
+        av_packet_unref(pkt);
+    }
+    
+    avfilter_graph_free(&filterGraph);
+    avcodec_free_context(&ctx);
+    avformat_close_input(&fmtCtx);
+    av_frame_free(&frame);
+    av_frame_free(&filt_frame);
+    av_packet_free(&pkt);
 }
 
 VideoFilter::~VideoFilter()
 {
+}
+
+void VideoFilter::display_frame(const AVFrame* frame, AVRational time_base)
+{
+    int64_t delay = 0;
+    uint8_t* p0 = NULL;
+    uint8_t* p = NULL;
+
+    if(frame->pts != AV_NOPTS_VALUE)
+    {
+        if(m_lastPts != AV_NOPTS_VALUE)
+        {
+            delay = av_rescale_q(frame->pts - m_lastPts, time_base, AV_TIME_BASE_Q);
+            if(delay > 0 && delay < 1000000)
+            {
+                usleep(delay);
+            }
+        }
+        m_lastPts = frame->pts;
+    }
+
+    p0 = frame->data[0];
+    puts("\033c");
+
+    for(int y=0; y<frame->height; y++)
+    {
+        p = p0;
+        for(int x=0; x<frame->width; x++)
+        {
+            putchar(" .-+#"[*(p++) / 52]);
+        }
+        putchar('\n');
+        p0 += frame->linesize[0];
+    }
+    fflush(stdout);
 }
