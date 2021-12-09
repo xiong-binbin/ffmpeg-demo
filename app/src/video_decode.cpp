@@ -1,4 +1,5 @@
 #include "video_decode.h"
+#include "libyuv.h"
 
 #define INBUF_SIZE 4096
 
@@ -57,12 +58,12 @@ VideoDecode::VideoDecode()
 
             if(pkt->size > 0)
             {
-                decode(ctx, frame, pkt, "test");
+                decode(ctx, frame, pkt, "yuv");
             }
         }
     }
 
-    decode(ctx, frame, NULL, "test");
+    decode(ctx, frame, NULL, "yuv");
 
     fclose(in_file);
     av_parser_close(parser);
@@ -84,6 +85,14 @@ void VideoDecode::decode(AVCodecContext *ctx, AVFrame *frame, AVPacket *pkt, con
     int i = 0;
     FILE *fp = NULL;
 
+    AVFrame* dstFrame = av_frame_alloc();
+    assert(NULL != dstFrame);
+
+    dstFrame->width = 640;
+    dstFrame->height = 480;
+    dstFrame->format = AV_PIX_FMT_YUV420P;
+    av_frame_get_buffer(dstFrame, 0);
+
     ret = avcodec_send_packet(ctx, pkt);
     assert(0 == ret);
 
@@ -99,14 +108,19 @@ void VideoDecode::decode(AVCodecContext *ctx, AVFrame *frame, AVPacket *pkt, con
             assert(0);
         }
 
+        libyuv::I420Scale(frame->data[0], frame->linesize[0], frame->data[1], frame->linesize[1], frame->data[2], frame->linesize[2], frame->width, frame->height, 
+            dstFrame->data[0], dstFrame->linesize[0], dstFrame->data[1], dstFrame->linesize[1], dstFrame->data[2], dstFrame->linesize[2], dstFrame->width, dstFrame->height, libyuv::kFilterBilinear);
+
         snprintf(name, sizeof(name), "%s-%d", file, ctx->frame_number);
 
         fp = fopen(name, "wb");
-        fprintf(fp, "P5\n%d %d\n%d\n", frame->width, frame->height, 255);
-        for(i = 0; i < frame->height; i++)
+        fprintf(fp, "P5\n%d %d\n%d\n", dstFrame->width, dstFrame->height, 255);
+        for(i = 0; i < dstFrame->height; i++)
         {
-            fwrite(frame->data[0] + i * frame->linesize[0], 1, frame->width, fp);
+            fwrite(dstFrame->data[0] + i * dstFrame->linesize[0], 1, dstFrame->width, fp);
         }
         fclose(fp);
     }
+
+    av_frame_free(&dstFrame);
 }

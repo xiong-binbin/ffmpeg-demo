@@ -52,6 +52,7 @@ target_link_libraries(
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libswresample.so
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libswscale.so
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libx264.so
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/libyuv.so
     -Wl,--end-group
 )
 
