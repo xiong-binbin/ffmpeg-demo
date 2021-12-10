@@ -99,7 +99,7 @@ void VideoDecode::decode(AVCodecContext *ctx, AVFrame *frame, AVPacket *pkt, con
     av_frame_get_buffer(bgFrame, 0);
 
     //黑色背景
-    memset(bgFrame->data[0], 0xff, bgFrame->linesize[0]*bgFrame->height);
+    memset(bgFrame->data[0], 0x00, bgFrame->linesize[0]*bgFrame->height);
     memset(bgFrame->data[1], 0x80, bgFrame->linesize[1]*bgFrame->height/2);
     memset(bgFrame->data[2], 0x80, bgFrame->linesize[2]*bgFrame->height/2);
 
