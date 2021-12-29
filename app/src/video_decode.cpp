@@ -123,8 +123,14 @@ void VideoDecode::decode(AVCodecContext *ctx, AVFrame *frame, AVPacket *pkt, con
             assert(0);
         }
 
-        libyuv::I420Scale(frame->data[0], frame->linesize[0], frame->data[1], frame->linesize[1], frame->data[2], frame->linesize[2], frame->width, frame->height, 
-            aFrame->data[0], aFrame->linesize[0], aFrame->data[1], aFrame->linesize[1], aFrame->data[2], aFrame->linesize[2], aFrame->width, aFrame->height, libyuv::kFilterBilinear);
+        libyuv::I420Scale(frame->data[0], frame->linesize[0], 
+                          frame->data[1], frame->linesize[1], 
+                          frame->data[2], frame->linesize[2], 
+                          frame->width, frame->height, 
+                          aFrame->data[0], aFrame->linesize[0], 
+                          aFrame->data[1], aFrame->linesize[1], 
+                          aFrame->data[2], aFrame->linesize[2], 
+                          aFrame->width, aFrame->height, libyuv::kFilterBilinear);
 
         x = 0;
         y = 0;
