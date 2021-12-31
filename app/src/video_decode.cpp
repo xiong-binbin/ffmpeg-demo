@@ -135,36 +135,24 @@ void VideoDecode::decode(AVCodecContext *ctx, AVFrame *frame, AVPacket *pkt, con
         x = 0;
         y = 0;
 
-        libyuv::I420Copy(aFrame->data[0] + aFrame->linesize[0],
-                         aFrame->linesize[0],
-                         aFrame->data[1] + aFrame->linesize[1],
-                         aFrame->linesize[1],
-                         aFrame->data[2] + aFrame->linesize[2],
-                         aFrame->linesize[2],
-                         bgFrame->data[0] + x + y*bgFrame->linesize[0],
-                         bgFrame->linesize[0],
-                         bgFrame->data[1] + x/2 + y/2*bgFrame->linesize[1],
-                         bgFrame->linesize[1],
-                         bgFrame->data[2] + x/2 + y/2*bgFrame->linesize[2],
-                         bgFrame->linesize[2],
+        libyuv::I420Copy(aFrame->data[0], aFrame->linesize[0],
+                         aFrame->data[1], aFrame->linesize[1],
+                         aFrame->data[2], aFrame->linesize[2],
+                         bgFrame->data[0] + x + y*bgFrame->linesize[0], bgFrame->linesize[0],
+                         bgFrame->data[1] + x/2 + y/2*bgFrame->linesize[1], bgFrame->linesize[1],
+                         bgFrame->data[2] + x/2 + y/2*bgFrame->linesize[2], bgFrame->linesize[2],
                          bgFrame->width - x >= aFrame->width ? aFrame->width : (bgFrame->width - x),
                          bgFrame->height - y >= aFrame->height ? aFrame->height : (bgFrame->height - y));
 
         x = 700;
         y = 400;
 
-        libyuv::I420Copy(aFrame->data[0] + aFrame->linesize[0],
-                         aFrame->linesize[0],
-                         aFrame->data[1] + aFrame->linesize[1],
-                         aFrame->linesize[1],
-                         aFrame->data[2] + aFrame->linesize[2],
-                         aFrame->linesize[2],
-                         bgFrame->data[0] + x + y*bgFrame->linesize[0],
-                         bgFrame->linesize[0],
-                         bgFrame->data[1] + x/2 + y/2*bgFrame->linesize[1],
-                         bgFrame->linesize[1],
-                         bgFrame->data[2] + x/2 + y/2*bgFrame->linesize[2],
-                         bgFrame->linesize[2],
+        libyuv::I420Copy(aFrame->data[0], aFrame->linesize[0],
+                         aFrame->data[1], aFrame->linesize[1],
+                         aFrame->data[2], aFrame->linesize[2],
+                         bgFrame->data[0] + x + y*bgFrame->linesize[0], bgFrame->linesize[0],
+                         bgFrame->data[1] + x/2 + y/2*bgFrame->linesize[1], bgFrame->linesize[1],
+                         bgFrame->data[2] + x/2 + y/2*bgFrame->linesize[2], bgFrame->linesize[2],
                          bgFrame->width - x >= aFrame->width ? aFrame->width : (bgFrame->width - x),
                          bgFrame->height - y >= aFrame->height ? aFrame->height : (bgFrame->height - y));
 
