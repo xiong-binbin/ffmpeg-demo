@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-08 17:12:27
- * @LastEditTime: 2022-01-06 13:39:47
+ * @LastEditTime: 2022-01-10 14:04:57
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /ffmpeg-demo/app/src/test.cpp
@@ -13,6 +13,7 @@
 #include "audio_encode.h"
 #include "video_encode.h"
 #include "audio_filter.h"
+#include "audio_mix.h"
 
 void test()
 {
@@ -21,5 +22,6 @@ void test()
     // DemuxDecode* dd = new DemuxDecode();
     // AudioEncode* ae = new AudioEncode();
     // VideoEncode* ve = new VideoEncode();
-    AudioFilter*  af = new AudioFilter();
+    // AudioFilter*  af = new AudioFilter();
+    AudioMix* am = new AudioMix();
 }
