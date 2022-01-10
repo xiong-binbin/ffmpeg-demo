@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-12-17 16:17:06
- * @LastEditTime: 2022-01-06 14:43:22
+ * @LastEditTime: 2022-01-10 15:13:48
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /ffmpeg-demo/app/src/audio_filter.cpp
@@ -50,13 +50,13 @@ AudioFilter::AudioFilter()
     ret = avcodec_open2(codecCtx, codec, NULL);
     assert(0 == ret);
 
-    filterGraph = avfilter_graph_alloc();
-    assert(NULL != filterGraph);
-
     if(!codecCtx->channel_layout)
     {
         codecCtx->channel_layout = av_get_default_channel_layout(codecCtx->channels);
     }
+
+    filterGraph = avfilter_graph_alloc();
+    assert(NULL != filterGraph);
 
     AVRational time_base = fmtCtx->streams[audioStreamIndex]->time_base;
     snprintf(args, sizeof(args), "time_base=%d/%d:sample_rate=%d:sample_fmt=%s:channel_layout=0x%" PRIx64, 

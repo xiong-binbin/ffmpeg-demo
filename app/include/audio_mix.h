@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2022-01-10 09:40:58
- * @LastEditTime: 2022-01-10 14:12:10
+ * @LastEditTime: 2022-01-10 16:46:45
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /ffmpeg-demo/app/include/audio_mix.h
@@ -24,5 +24,6 @@ public:
     ~AudioMix();
 
     std::vector<AVFrame*> AudioDecode(const std::string& file);
+    int CreateAudioFilter(AVFilterGraph **graph, AVFilterContext **srcs, int len, AVFilterContext **sink);
 };
 

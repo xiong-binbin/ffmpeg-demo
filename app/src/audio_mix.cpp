@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2022-01-10 09:40:47
- * @LastEditTime: 2022-01-10 14:41:31
+ * @LastEditTime: 2022-01-10 16:47:13
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /ffmpeg-demo/app/src/audio_mix.cpp
@@ -12,16 +12,19 @@
 AudioMix::AudioMix()
 {
     std::vector<AVFrame*> af0 = AudioDecode("0.mp4");
+    std::vector<AVFrame*> af1 = AudioDecode("1.mp4");
 
-    FILE* file = fopen("0.pcm", "wb");
-    assert(NULL != file);
-    for(auto iter = af0.begin(); iter != af0.end(); iter++)
-    {
-        size_t unpadded_linesize = (*iter)->nb_samples * av_get_bytes_per_sample((AVSampleFormat)(*iter)->format);
-        fwrite((*iter)->extended_data[0], 1, unpadded_linesize, file);
-        av_frame_free(&(*iter));
-    }
-    fclose(file);
+    // FILE* file = fopen("1.pcm", "wb");
+    // assert(NULL != file);
+    // for(auto iter = af1.begin(); iter != af1.end(); iter++)
+    // {
+    //     size_t unpadded_linesize = (*iter)->nb_samples * av_get_bytes_per_sample((AVSampleFormat)(*iter)->format);
+    //     fwrite((*iter)->extended_data[0], 1, unpadded_linesize, file);
+    //     av_frame_free(&(*iter));
+    // }
+    // fclose(file);
+
+    
 
     std::cout << "Finish!" << std::endl;
 }
@@ -73,7 +76,7 @@ std::vector<AVFrame*> AudioMix::AudioDecode(const std::string& file)
         channels = 1;
     }
 
-    printf("file: %s, audio channels: %d, AVSampleFormat: %d \n", file.c_str(), channels, sfmt);
+    printf("file: %s, audio sample_rate: %d, channels: %d, sample_format: %d, channel_layout=%ld \n", file.c_str(), codecCtx->sample_rate, channels, sfmt, codecCtx->channel_layout);
 
     while (true)
     {
@@ -102,7 +105,6 @@ std::vector<AVFrame*> AudioMix::AudioDecode(const std::string& file)
                 {
                     assert(0);
                 }
-
                 frames.push_back(frame);
             }
         }
@@ -115,3 +117,69 @@ std::vector<AVFrame*> AudioMix::AudioDecode(const std::string& file)
     return frames;
 }
 
+int AudioMix::CreateAudioFilter(AVFilterGraph **graph, AVFilterContext **srcs, int len, AVFilterContext **sink)
+{
+    int ret = 0;
+    char args[256] = {0};
+    AVFilterGraph* filterGraph = avfilter_graph_alloc();
+    assert(NULL != filterGraph);
+
+    for (int i = 0; i < len; i++)
+    {
+        //创建音频输入滤镜
+        const AVFilter* abuffer = avfilter_get_by_name("abuffer");
+        memset(args, 0, sizeof(args));
+        snprintf(args, sizeof(args), "src%d", i);
+        AVFilterContext* abufferCtx = avfilter_graph_alloc_filter(filterGraph, abuffer, args);
+
+        memset(args, 0, sizeof(args));
+        snprintf(args, sizeof(args), "time_base=1/44100:sample_rate=44100:sample_fmt=3:channel_layout=3");
+        ret = avfilter_init_str(abufferCtx, args);
+        assert(0 == ret);
+
+        srcs[i] = abufferCtx;
+    }
+
+    //创建混合音频滤镜
+    const AVFilter* amix = avfilter_get_by_name("amix");
+    AVFilterContext* amixCtx = avfilter_graph_alloc_filter(filterGraph, amix, "amix");
+    memset(args, 0, sizeof(args));
+    snprintf(args, sizeof(args), "inputs=%d:duration=first:dropout_transition=3", len);
+    ret = avfilter_init_str(amixCtx, args);
+    assert(0 == ret);
+
+    //创建音频格式滤镜
+    const AVFilter* aformat = avfilter_get_by_name("aformat");
+    AVFilterContext* aformatCtx = avfilter_graph_alloc_filter(filterGraph, aformat, "aformat");
+    memset(args, 0, sizeof(args));
+    snprintf(args, sizeof(args), "sample_rates=48000:sample_fmts=s16le:channel_layouts=stereo");
+    ret = avfilter_init_str(aformatCtx, args);
+    assert(0 == ret);
+
+    //创建音频输出滤镜
+    const AVFilter* abuffersink = avfilter_get_by_name("abuffersink");
+    AVFilterContext* sinkCtx = avfilter_graph_alloc_filter(filterGraph, abuffersink, "sink");
+    avfilter_init_str(sinkCtx, NULL);
+
+    //链接滤镜
+    for(int i = 0; i < len; i++)
+    {
+        ret = avfilter_link(srcs[i], 0, amixCtx, i);
+        assert(0 == ret);
+    }
+
+    ret = avfilter_link(amixCtx, 0, aformatCtx, 0);
+    assert(0 == ret);
+
+    ret = avfilter_link(aformatCtx, 0, sinkCtx, 0);
+    assert(0 == ret);
+
+    //设置参数
+    ret = avfilter_graph_config(filterGraph, NULL);
+    assert(0 == ret);
+
+    *graph = filterGraph;
+    *sink = sinkCtx;
+
+    return 0;
+}
