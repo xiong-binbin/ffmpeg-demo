@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2022-01-10 09:40:47
- * @LastEditTime: 2022-01-10 17:42:11
+ * @LastEditTime: 2022-01-10 18:49:18
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /ffmpeg-demo/app/src/audio_mix.cpp
@@ -60,6 +60,27 @@ AudioMix::AudioMix()
 
 AudioMix::~AudioMix()
 {
+}
+
+AVFrame* AudioMix::AllocSilenceFrame(int nb_samples, int sample_rate, AVSampleFormat sample_fmt, int channels, uint64_t channel_layout)
+{
+    int ret = 0;
+    AVFrame* frame = NULL;
+
+    frame = av_frame_alloc();
+    assert(NULL != frame);
+
+    frame->nb_samples = nb_samples;
+    frame->sample_rate = sample_rate;
+    frame->format = sample_fmt;
+    frame->channels = channels;
+    frame->channel_layout = channel_layout;
+
+    ret = av_frame_get_buffer(frame, 0);
+    assert(0 == ret);
+
+    av_samples_set_silence(frame->extended_data, 0, frame->nb_samples, frame->channels, (AVSampleFormat)frame->format);
+    return frame;
 }
 
 std::vector<AVFrame*> AudioMix::AudioDecode(const std::string& file)
