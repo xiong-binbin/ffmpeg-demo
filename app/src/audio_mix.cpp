@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2022-01-10 09:40:47
- * @LastEditTime: 2022-01-10 16:47:13
+ * @LastEditTime: 2022-01-10 17:42:11
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /ffmpeg-demo/app/src/audio_mix.cpp
@@ -11,8 +11,39 @@
 
 AudioMix::AudioMix()
 {
+    int ret = 0;
+    int size = 0;
+    AVFrame* filtFrame = av_frame_alloc();
+    
     std::vector<AVFrame*> af0 = AudioDecode("0.mp4");
     std::vector<AVFrame*> af1 = AudioDecode("1.mp4");
+    size = af0.size() < af1.size() ? af0.size() : af1.size();
+
+    ret = CreateAudioFilter(&m_filterGraph, m_filterCtxSrc, 2, &m_filterCtxSink);
+
+    FILE* file = fopen("out.pcm", "wb");
+    assert(NULL != file);
+
+    for(int i = 0; i < size; i++)
+    {
+        ret = av_buffersrc_add_frame(m_filterCtxSrc[0], af0[i]);
+        assert(0 == ret);
+
+        ret = av_buffersrc_add_frame(m_filterCtxSrc[1], af1[i]);
+        assert(0 == ret);
+
+        while ((ret = av_buffersink_get_frame(m_filterCtxSink, filtFrame)) >= 0)
+        {
+            size_t unpadded_linesize = filtFrame->nb_samples * av_get_bytes_per_sample((AVSampleFormat)filtFrame->format);
+            fwrite(filtFrame->extended_data[0], 1, unpadded_linesize, file);
+            av_frame_unref(filtFrame);
+        }
+
+        av_frame_free(&(af0[i]));
+        av_frame_free(&(af1[i]));
+    }
+
+    fclose(file);
 
     // FILE* file = fopen("1.pcm", "wb");
     // assert(NULL != file);
@@ -23,8 +54,6 @@ AudioMix::AudioMix()
     //     av_frame_free(&(*iter));
     // }
     // fclose(file);
-
-    
 
     std::cout << "Finish!" << std::endl;
 }
@@ -133,7 +162,7 @@ int AudioMix::CreateAudioFilter(AVFilterGraph **graph, AVFilterContext **srcs, i
         AVFilterContext* abufferCtx = avfilter_graph_alloc_filter(filterGraph, abuffer, args);
 
         memset(args, 0, sizeof(args));
-        snprintf(args, sizeof(args), "time_base=1/44100:sample_rate=44100:sample_fmt=3:channel_layout=3");
+        snprintf(args, sizeof(args), "time_base=1/44100:sample_rate=44100:sample_fmt=fltp:channel_layout=3");
         ret = avfilter_init_str(abufferCtx, args);
         assert(0 == ret);
 
@@ -152,7 +181,7 @@ int AudioMix::CreateAudioFilter(AVFilterGraph **graph, AVFilterContext **srcs, i
     const AVFilter* aformat = avfilter_get_by_name("aformat");
     AVFilterContext* aformatCtx = avfilter_graph_alloc_filter(filterGraph, aformat, "aformat");
     memset(args, 0, sizeof(args));
-    snprintf(args, sizeof(args), "sample_rates=48000:sample_fmts=s16le:channel_layouts=stereo");
+    snprintf(args, sizeof(args), "sample_rates=48000:sample_fmts=fltp:channel_layouts=3");
     ret = avfilter_init_str(aformatCtx, args);
     assert(0 == ret);
 
