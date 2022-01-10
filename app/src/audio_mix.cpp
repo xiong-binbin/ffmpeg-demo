@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2022-01-10 09:40:47
- * @LastEditTime: 2022-01-10 14:37:14
+ * @LastEditTime: 2022-01-10 14:41:31
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /ffmpeg-demo/app/src/audio_mix.cpp
@@ -73,7 +73,7 @@ std::vector<AVFrame*> AudioMix::AudioDecode(const std::string& file)
         channels = 1;
     }
 
-    printf("audio channels: %d, AVSampleFormat: %d \n", channels, sfmt);
+    printf("file: %s, audio channels: %d, AVSampleFormat: %d \n", file.c_str(), channels, sfmt);
 
     while (true)
     {
