@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2022-01-10 09:40:47
- * @LastEditTime: 2022-01-10 18:49:18
+ * @LastEditTime: 2022-01-11 10:07:24
  * @LastEditors: Please set LastEditors
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: /ffmpeg-demo/app/src/audio_mix.cpp
@@ -12,23 +12,26 @@
 AudioMix::AudioMix()
 {
     int ret = 0;
-    int size = 0;
     AVFrame* filtFrame = av_frame_alloc();
     
     std::vector<AVFrame*> af0 = AudioDecode("0.mp4");
     std::vector<AVFrame*> af1 = AudioDecode("1.mp4");
-    size = af0.size() < af1.size() ? af0.size() : af1.size();
 
     ret = CreateAudioFilter(&m_filterGraph, m_filterCtxSrc, 2, &m_filterCtxSink);
 
     FILE* file = fopen("out.pcm", "wb");
     assert(NULL != file);
 
+    int size = af0.size() < af1.size() ? af0.size() : af1.size();
     for(int i = 0; i < size; i++)
     {
+        // AVFrame* silenceFrame0 = AllocSilenceFrame(af0[0]->nb_samples, af0[0]->sample_rate, (AVSampleFormat)af0[0]->format, af0[0]->channels, af0[0]->channel_layout);
+        // ret = av_buffersrc_add_frame(m_filterCtxSrc[0], silenceFrame0);
         ret = av_buffersrc_add_frame(m_filterCtxSrc[0], af0[i]);
         assert(0 == ret);
 
+        // AVFrame* silenceFrame1 = AllocSilenceFrame(af1[0]->nb_samples, af1[0]->sample_rate, (AVSampleFormat)af1[0]->format, af1[0]->channels, af1[0]->channel_layout);
+        // ret = av_buffersrc_add_frame(m_filterCtxSrc[1], silenceFrame1);
         ret = av_buffersrc_add_frame(m_filterCtxSrc[1], af1[i]);
         assert(0 == ret);
 
@@ -44,16 +47,6 @@ AudioMix::AudioMix()
     }
 
     fclose(file);
-
-    // FILE* file = fopen("1.pcm", "wb");
-    // assert(NULL != file);
-    // for(auto iter = af1.begin(); iter != af1.end(); iter++)
-    // {
-    //     size_t unpadded_linesize = (*iter)->nb_samples * av_get_bytes_per_sample((AVSampleFormat)(*iter)->format);
-    //     fwrite((*iter)->extended_data[0], 1, unpadded_linesize, file);
-    //     av_frame_free(&(*iter));
-    // }
-    // fclose(file);
 
     std::cout << "Finish!" << std::endl;
 }
