@@ -147,14 +147,28 @@ void VideoDecode::decode(AVCodecContext *ctx, AVFrame *frame, AVPacket *pkt, con
         x = 700;
         y = 400;
 
-        libyuv::I420Copy(aFrame->data[0], aFrame->linesize[0],
-                         aFrame->data[1], aFrame->linesize[1],
-                         aFrame->data[2], aFrame->linesize[2],
-                         bgFrame->data[0] + x + y*bgFrame->linesize[0], bgFrame->linesize[0],
-                         bgFrame->data[1] + x/2 + y/2*bgFrame->linesize[1], bgFrame->linesize[1],
-                         bgFrame->data[2] + x/2 + y/2*bgFrame->linesize[2], bgFrame->linesize[2],
-                         bgFrame->width - x >= aFrame->width ? aFrame->width : (bgFrame->width - x),
-                         bgFrame->height - y >= aFrame->height ? aFrame->height : (bgFrame->height - y));
+        int width  = bgFrame->width - x >= aFrame->width ? aFrame->width : (bgFrame->width - x);
+        int height = bgFrame->height - y >= aFrame->height ? aFrame->height : (bgFrame->height - y);
+        int opacity = (int)(255 * 0.8);
+        if(opacity > 255) { opacity = 255; }
+        uint8_t* alpha = (uint8_t*)malloc(sizeof(uint8_t)*width*height);
+        memset(alpha, opacity, sizeof(uint8_t)*width*height);
+
+        libyuv::I420Blend(aFrame->data[0], aFrame->linesize[0],
+                          aFrame->data[1], aFrame->linesize[1],
+                          aFrame->data[2], aFrame->linesize[2],
+                          bgFrame->data[0] + x   + y*bgFrame->linesize[0],   bgFrame->linesize[0],
+                          bgFrame->data[1] + x/2 + y/2*bgFrame->linesize[1], bgFrame->linesize[1],
+                          bgFrame->data[2] + x/2 + y/2*bgFrame->linesize[2], bgFrame->linesize[2],
+                          alpha,
+                          width,
+                          bgFrame->data[0] + x   + y*bgFrame->linesize[0],   bgFrame->linesize[0],
+                          bgFrame->data[1] + x/2 + y/2*bgFrame->linesize[1], bgFrame->linesize[1],
+                          bgFrame->data[2] + x/2 + y/2*bgFrame->linesize[2], bgFrame->linesize[2],
+                          width,
+                          height);
+
+        free(alpha);
 
         snprintf(name, sizeof(name), "%s-%d", file, ctx->frame_number);
 
