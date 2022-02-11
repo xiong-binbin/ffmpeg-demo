@@ -1,5 +1,7 @@
 # ffmpeg-demo
 
+sudo apt install libva-dev
+
 export LD_LIBRARY_PATH=/home/user/ffmpeg-demo/third_party/lib
 
 
