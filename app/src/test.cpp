@@ -17,8 +17,8 @@
 
 void test()
 {
-    // AudioDecode* ad = new AudioDecode();
-    VideoDecode* vd = new VideoDecode();
+     AudioDecode* ad = new AudioDecode();
+     // VideoDecode* vd = new VideoDecode();
     // DemuxDecode* dd = new DemuxDecode();
     // AudioEncode* ae = new AudioEncode();
     // VideoEncode* ve = new VideoEncode();

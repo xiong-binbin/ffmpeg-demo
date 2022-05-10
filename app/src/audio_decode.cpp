@@ -122,15 +122,38 @@ void AudioDecode::decode(AVCodecContext *ctx, AVPacket *pkt, AVFrame *frame, FIL
             assert(0);
         }
 
-        len = av_get_bytes_per_sample(ctx->sample_fmt);
-        assert(0 <= len);
-        
-        for(i=0; i<frame->nb_samples; i++)
-        {
-            for(ch=0; ch<ctx->channels; ch++)
-            {
-                fwrite(frame->data[ch] + len*i, 1, len, file);
-            }
+        //创建格式转换器
+        if(swr == NULL) {
+            swr = swr_alloc_set_opts(NULL, frame->channel_layout, AV_SAMPLE_FMT_S16, frame->sample_rate,
+                                     frame->channel_layout, (AVSampleFormat)frame->format, frame->sample_rate, 0, NULL);
+            assert(swr != NULL);
+
+            ret =swr_init(swr);
+            assert(0 == ret);
         }
+
+        //构建格式转换后的frame
+        AVFrame* outFrame = av_frame_alloc();
+        assert(NULL != outFrame);
+
+        outFrame->nb_samples     = frame->nb_samples;
+        outFrame->format         = AV_SAMPLE_FMT_S16;
+        outFrame->channel_layout = frame->channel_layout;
+
+        ret = av_frame_get_buffer(outFrame, 0);
+        assert(0 == ret);
+
+//        ret = swr_convert(swr, outFrame->data[0], )
+//
+//        len = av_get_bytes_per_sample(ctx->sample_fmt);
+//        assert(0 <= len);
+//
+//        for(i=0; i<frame->nb_samples; i++)
+//        {
+//            for(ch=0; ch<ctx->channels; ch++)
+//            {
+//                fwrite(frame->data[ch] + len*i, 1, len, file);
+//            }
+//        }
     }
 }

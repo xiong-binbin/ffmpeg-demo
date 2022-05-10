@@ -4,6 +4,7 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
 #include "libswscale/swscale.h"
+#include "libswresample/swresample.h"
 }
 
 class AudioDecode
@@ -13,5 +14,8 @@ public:
   ~AudioDecode();
 
 protected:
-  static void decode(AVCodecContext *ctx, AVPacket *pkt, AVFrame *frame, FILE *file);
+    void decode(AVCodecContext *ctx, AVPacket *pkt, AVFrame *frame, FILE *file);
+
+private:
+    SwrContext* swr{ NULL };
 };
