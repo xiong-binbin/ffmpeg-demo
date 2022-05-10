@@ -53,7 +53,7 @@ AudioDecode::AudioDecode()
             assert(NULL != frame);
         }
         ret = av_parser_parse2(parser, ctx, &pkt->data, &pkt->size, data, data_size, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
-        assert(0 == ret);
+       // assert(0 == ret);
 
         data      += ret;
         data_size -= ret;
