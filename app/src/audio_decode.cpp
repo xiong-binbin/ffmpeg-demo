@@ -122,38 +122,51 @@ void AudioDecode::decode(AVCodecContext *ctx, AVPacket *pkt, AVFrame *frame, FIL
             assert(0);
         }
 
-        //创建格式转换器
-        if(swr == NULL) {
-            swr = swr_alloc_set_opts(NULL, frame->channel_layout, AV_SAMPLE_FMT_S16, frame->sample_rate,
-                                     frame->channel_layout, (AVSampleFormat)frame->format, frame->sample_rate, 0, NULL);
-            assert(swr != NULL);
-
-            ret =swr_init(swr);
-            assert(0 == ret);
-        }
-
         //构建格式转换后的frame
         AVFrame* outFrame = av_frame_alloc();
         assert(NULL != outFrame);
 
-        outFrame->nb_samples     = frame->nb_samples;
+        outFrame->sample_rate    = 48000;
+        outFrame->channels       = frame->channels;
+        outFrame->nb_samples     = av_rescale_rnd(frame->nb_samples, outFrame->sample_rate, frame->sample_rate, AV_ROUND_UP);
         outFrame->format         = AV_SAMPLE_FMT_S16;
         outFrame->channel_layout = frame->channel_layout;
 
         ret = av_frame_get_buffer(outFrame, 0);
         assert(0 == ret);
 
-//        ret = swr_convert(swr, outFrame->data[0], )
-//
-//        len = av_get_bytes_per_sample(ctx->sample_fmt);
-//        assert(0 <= len);
-//
-//        for(i=0; i<frame->nb_samples; i++)
-//        {
-//            for(ch=0; ch<ctx->channels; ch++)
-//            {
-//                fwrite(frame->data[ch] + len*i, 1, len, file);
-//            }
-//        }
+        //创建格式转换器
+        if(swr == NULL) {
+            swr = swr_alloc_set_opts(NULL, outFrame->channel_layout, (AVSampleFormat)outFrame->format, outFrame->sample_rate,
+                                     frame->channel_layout, (AVSampleFormat)frame->format, frame->sample_rate, 0, NULL);
+            assert(swr != NULL);
+
+            ret = swr_init(swr);
+            assert(0 == ret);
+        }
+
+        //转换音频格式
+        outFrame->nb_samples = swr_convert(swr, outFrame->extended_data, outFrame->nb_samples, (const uint8_t**)frame->extended_data, frame->nb_samples);
+
+        //计算音频数据大小
+        int outLen = av_samples_get_buffer_size(&outFrame->linesize[0], outFrame->channels, outFrame->nb_samples, (AVSampleFormat)outFrame->format, 1);
+
+        //写文件
+        fwrite(outFrame->data[0], 1, outLen, file);
+
+        // int inLen = av_samples_get_buffer_size(&frame->linesize[0], frame->channels, frame->nb_samples, (AVSampleFormat)frame->format, 1);
+        // std::cout << "inLen: " << inLen << std::endl;
+
+        //保存FLTP格式音频
+        // int len = av_get_bytes_per_sample(ctx->sample_fmt);
+        // assert(0 <= len);
+
+        // for(int i=0; i<frame->nb_samples; i++)
+        // {
+        //     for(int ch=0; ch<ctx->channels; ch++)
+        //     {
+        //         fwrite(frame->data[ch] + len*i, 1, len, file);
+        //     }
+        // }
     }
 }
